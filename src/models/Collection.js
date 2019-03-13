@@ -1,8 +1,41 @@
+import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
+
 class Collection {
+  static localStoragePrefix = "_COLLECTION_";
+
+  storageWriteIntervalMs = 1000;
+
   constructor(name) {
     this._name = name;
-    this._items = [];
+    this._localStorageKey = `${Collection.localStoragePrefix}${name}`;
+
+    const items = this._readFromLocalStorage();
+    this._items = items || [];
   }
+
+  _readFromLocalStorage() {
+    let items = null;
+    try {
+      const jsonString = localStorage.getItem(this._localStorageKey);
+      if (jsonString) {
+        items = JSON.parse(jsonString);
+      }
+    } catch {}
+    return items;
+  }
+
+  _writeToLocalStorage = throttle(() => {
+    const items = this._items;
+    try {
+      const jsonString = JSON.stringify(items);
+      localStorage.setItem(this._localStorageKey, jsonString);
+      return true;
+    } catch {
+      return false;
+    }
+  }, this.storageWriteIntervalMs);
+
   _generateId() {
     return Math.random()
       .toString(36)
@@ -14,6 +47,7 @@ class Collection {
       _id,
       ...item
     });
+    this._writeToLocalStorage();
   }
   find(predicate) {
     return this._items.find(predicate);
@@ -23,12 +57,14 @@ class Collection {
   }
   remove(id) {
     this._items.filter(({ _id }) => _id !== id);
+    this._writeToLocalStorage();
   }
   update(id, newItem) {
     this._items = this._items.map(item => {
       if (item._id === id) return { ...newItem, _id: id };
       return item;
     });
+    this._writeToLocalStorage();
   }
 }
 
