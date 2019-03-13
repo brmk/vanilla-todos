@@ -2,16 +2,20 @@ export const r = (tag, props, ...children) => {
   if (typeof tag === "function") return tag(props);
 
   const element = document.createElement(tag);
+
   if (typeof props === "object") {
     setAttributes(element, props);
   }
 
-  children.forEach(childNode => {
-    element.append(childNode);
-  });
+  appendChildren(children, element);
+  function appendChildren(children, parent) {
+    children.forEach(childNode => {
+      if (Array.isArray(childNode)) appendChildren(childNode, parent);
+      else element.append(childNode);
+    });
+  }
 
   return element;
-  // console.log(tag, children);
 };
 
 /*
@@ -50,8 +54,8 @@ export const getRenderableComponent = descriptor => {
 
 export function setAttributes(el, attrs) {
   for (let key in attrs) {
-    if (key === "onSubmit") {
-      setEventListeners(el, { submit: attrs[key] });
+    if (/^on.*$/.test(key)) {
+      el.addEventListener(key.substring(2).toLowerCase(), attrs[key]);
     } else {
       el.setAttribute(key, attrs[key]);
     }

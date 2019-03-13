@@ -1,5 +1,11 @@
 class TodoModel {
   init(todo) {
+    const { message } = todo;
+
+    if (message.length < 3) {
+      throw { message: "Message should have at least 3 characters" };
+    }
+
     return {
       ...todo,
       _isOpen: true,

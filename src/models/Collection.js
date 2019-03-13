@@ -14,6 +14,11 @@ class Collection {
     this._items = items || [];
   }
 
+  reset() {
+    this._items = [];
+    this._writeToLocalStorage();
+  }
+
   _readFromLocalStorage() {
     let items = null;
     try {
@@ -41,6 +46,7 @@ class Collection {
       .toString(36)
       .substr(2, 9);
   }
+
   insert(item) {
     const _id = this._generateId();
     this._items.push({
@@ -49,16 +55,20 @@ class Collection {
     });
     this._writeToLocalStorage();
   }
+
   find(predicate) {
     return this._items.find(predicate);
   }
+
   get items() {
     return this._items;
   }
+
   remove(id) {
     this._items.filter(({ _id }) => _id !== id);
     this._writeToLocalStorage();
   }
+
   update(id, newItem) {
     this._items = this._items.map(item => {
       if (item._id === id) return { ...newItem, _id: id };

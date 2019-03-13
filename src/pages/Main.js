@@ -3,7 +3,7 @@ import todosCollection from "../collections/todos";
 // import { getRenderableComponent } from "../lib/render";
 // import ToDoListViewDescriptor from "../views/ToDoList";
 // import ToDoFormViewDescriptor from "../views/ToDoForm";
-// import ToDoList from '../components/ToDoList';
+import ToDoList from "../components/ToDoList";
 import ToDoForm from "../components/ToDoForm";
 
 export default () => {
@@ -11,7 +11,7 @@ export default () => {
   return (
     <div>
       <ToDoForm />
-      {/* <ToDoList items={items} /> */}
+      <ToDoList items={items} />
     </div>
   );
   // const items = todosCollection.items;

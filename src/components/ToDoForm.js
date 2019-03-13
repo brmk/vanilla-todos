@@ -12,29 +12,36 @@ const onSubmit = e => {
   // const message = document.getElementById("message").value;
   const message = form.message.value;
 
-  if (message.length < 3) {
-    alert("Message should have at least 3 characters");
-    return;
-  }
-
   const formData = {
     message
   };
 
-  const todo = TodoModel.init(formData);
-  todosCollection.insert(todo);
+  try {
+    const todo = TodoModel.init(formData);
+    todosCollection.insert(todo);
 
-  console.log(todosCollection.items);
+    form.message.value = "";
+    rerender();
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
-  form.message.value = "";
+const clearToDos = () => {
+  todosCollection.reset();
   rerender();
 };
 
 export default () => {
   return (
-    <form onSubmit={onSubmit}>
-      <input type="text" id="message" name="message" placeholder="..." />
-      <button type="submit">Add +</button>
-    </form>
+    <div>
+      <button type="button" onClick={clearToDos}>
+        Reset
+      </button>
+      <form onSubmit={onSubmit}>
+        <input type="text" id="message" name="message" placeholder="..." />
+        <button type="submit">Add +</button>
+      </form>
+    </div>
   );
 };
